@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  vprodb:
+    build: 
+      context: ./Docker-files/db
+    image: kubecmt/devdb
+    container_name: vprodb
+    ports:
+      - "3306:3306"
+    volumes:
+      - devdbdata:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=vprodbpass
+  
+  vprocache01:
+    image: memcached
+    ports:
+      - "11211:11211"
+    
+  devmq:
+    image: rabbitmq
+    ports:
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=devprod
+      - RABBITMQ_DEFAULT_PASS=devmqpass
+  
+  devapp:
+    build: 
+      context: ./Docker-files/app
+    image: kubecmt/devapp
+    container_name: devapp
+    ports:
+      - "8080:8080"
+    volumes:
+      - devappdata:/usr/local/tomcat/webapps
+
+  devweb:
+    build: 
+      context: ./Docker-files/web
+    image: kubecmt/devweb
+    container_name: devweb
+    ports:
+      - "80:80"
+
+volumes:
+  devdbdata: {}
+  devappdata: {}
+
+
+
+  
